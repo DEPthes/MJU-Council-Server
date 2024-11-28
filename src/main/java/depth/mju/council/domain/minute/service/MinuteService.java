@@ -6,7 +6,7 @@ import depth.mju.council.domain.minute.dto.res.GetMinuteRes;
 import depth.mju.council.domain.minute.entity.Minute;
 import depth.mju.council.domain.minute.repository.MinuteRepository;
 import depth.mju.council.domain.minute.dto.res.GetAllMinuteRes;
-import depth.mju.council.domain.user.entity.User;
+import depth.mju.council.domain.user.entity.UserEntity;
 import depth.mju.council.domain.user.repository.UserRepository;
 import depth.mju.council.global.payload.ApiResult;
 import depth.mju.council.global.payload.PageResponse;
@@ -31,12 +31,12 @@ public class MinuteService {
     private final MinuteRepository minuteRepository;
     @Transactional
     public void createMinute(Long id, List<MultipartFile> imgs, CreateMinuteReq createMinuteReq) {
-        User user = userRepository.findById(id).get();
+        UserEntity userEntity = userRepository.findById(id).get();
         // 회의록 저장 로직 필요
         Minute minute = Minute.builder()
                 .title(createMinuteReq.getTitle())
                 .content(createMinuteReq.getContent())
-                .user(user)
+                .userEntity(userEntity)
                 .build();
         minuteRepository.save(minute);
     }

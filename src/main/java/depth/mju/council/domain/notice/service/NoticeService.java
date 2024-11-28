@@ -9,7 +9,7 @@ import depth.mju.council.domain.notice.entity.Notice;
 import depth.mju.council.domain.notice.entity.NoticeFile;
 import depth.mju.council.domain.notice.repository.NoticeFileRepository;
 import depth.mju.council.domain.notice.repository.NoticeRepository;
-import depth.mju.council.domain.user.entity.User;
+import depth.mju.council.domain.user.entity.UserEntity;
 import depth.mju.council.domain.user.repository.UserRepository;
 import depth.mju.council.global.DefaultAssert;
 import depth.mju.council.domain.notice.dto.res.FileRes;
@@ -73,12 +73,12 @@ public class NoticeService {
     public void createNotice(
             List<MultipartFile> images, List<MultipartFile> files, CreateNoticeReq createNoticeReq)
     {
-        User user = userRepository.findById(1L).get(); // 임시
+        UserEntity userEntity = userRepository.findById(1L).get(); // 임시
 
         Notice notice = Notice.builder()
                 .title(createNoticeReq.getTitle())
                 .content(createNoticeReq.getContent())
-                .user(user)
+                .userEntity(userEntity)
                 .build();
         noticeRepository.save(notice);
 

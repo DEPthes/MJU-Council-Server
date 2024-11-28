@@ -3,7 +3,7 @@ package depth.mju.council.domain.promise.service;
 import depth.mju.council.domain.promise.dto.res.PromiseCategoryRes;
 import depth.mju.council.domain.promise.entity.PromiseCategory;
 import depth.mju.council.domain.promise.repository.PromiseCategoryRepository;
-import depth.mju.council.domain.user.entity.User;
+import depth.mju.council.domain.user.entity.UserEntity;
 import depth.mju.council.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,16 +20,16 @@ public class PromiseCategoryService {
     private final PromiseCategoryRepository promiseCategoryRepository;
     @Transactional
     public void createPromiseCategory(Long userId, String promiseTitle) {
-        User user = userRepository.findById(userId).get();
+        UserEntity userEntity = userRepository.findById(userId).get();
         PromiseCategory promiseCategory = PromiseCategory.builder()
                 .title(promiseTitle)
-                .user(user)
+                .userEntity(userEntity)
                 .build();
         promiseCategoryRepository.save(promiseCategory);
     }
     public List<PromiseCategoryRes> getPromiseCategory(Long userId) {
-        User user = userRepository.findById(userId).get();
-        List<PromiseCategory> promiseCategories = promiseCategoryRepository.findByUser(user);
+        UserEntity user = userRepository.findById(userId).get();
+        List<PromiseCategory> promiseCategories = promiseCategoryRepository.findByUserEntity(user);
         List<PromiseCategoryRes> promiseCategoryRes = promiseCategories.stream()
                 .map(promiseCategory -> PromiseCategoryRes.builder()
                         .promiseCategoryId(promiseCategory.getId())

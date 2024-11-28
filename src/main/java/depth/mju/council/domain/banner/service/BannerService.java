@@ -3,11 +3,9 @@ package depth.mju.council.domain.banner.service;
 import depth.mju.council.domain.banner.dto.res.GetBannerRes;
 import depth.mju.council.domain.banner.entity.Banner;
 import depth.mju.council.domain.banner.repository.BannerRepository;
-import depth.mju.council.domain.user.entity.User;
+import depth.mju.council.domain.user.entity.UserEntity;
 import depth.mju.council.domain.user.repository.UserRepository;
-import depth.mju.council.global.payload.ApiResult;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,16 +21,16 @@ public class BannerService {
     private final BannerRepository bannerRepository;
     @Transactional
     public void createBanner(Long userId, MultipartFile img) {
-        User user = userRepository.findById(userId).get();
+        UserEntity user = userRepository.findById(userId).get();
         Banner banner = Banner.builder()
                 .imgUrl("이미지 URL 저장 로직 필요")
-                .user(user)
+                .userEntity(user)
                 .build();
         bannerRepository.save(banner);
     }
     public List<GetBannerRes> getBanner(Long userId) {
-        User user = userRepository.findById(userId).get();
-        List<Banner> banners = bannerRepository.findByUser(user);
+        UserEntity userEntity = userRepository.findById(userId).get();
+        List<Banner> banners = bannerRepository.findByUserEntity(userEntity);
         List<GetBannerRes> bannersRes = banners.stream()
                 .map(banner -> GetBannerRes.builder()
                         .bannerId(banner.getId())

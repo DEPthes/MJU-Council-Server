@@ -2,10 +2,8 @@ package depth.mju.council.global.payload;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
 
 @Data
-
 public class ApiResult {
 
     //올바르게 로직을 처리했으면 True, 아니면 False를 반환합니다.

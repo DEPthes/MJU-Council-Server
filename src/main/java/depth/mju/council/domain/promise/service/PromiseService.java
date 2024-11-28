@@ -7,7 +7,7 @@ import depth.mju.council.domain.promise.entity.Promise;
 import depth.mju.council.domain.promise.entity.PromiseCategory;
 import depth.mju.council.domain.promise.repository.PromiseCategoryRepository;
 import depth.mju.council.domain.promise.repository.PromiseRepository;
-import depth.mju.council.domain.user.entity.User;
+import depth.mju.council.domain.user.entity.UserEntity;
 import depth.mju.council.domain.user.repository.UserRepository;
 import depth.mju.council.global.payload.ApiResult;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +27,9 @@ public class PromiseService {
     private final PromiseRepository promiseRepository;
     @Transactional
     public void createPromise(Long userId, String promiseTitle, CreatePromiseReq createPromiseReq) {
-        User user = userRepository.findById(userId).get();
+        UserEntity user = userRepository.findById(userId).get();
         // 정책 가져오기
-        PromiseCategory promiseCategory = promiseCategoryRepository.findByUserAndTitle(user,promiseTitle);
+        PromiseCategory promiseCategory = promiseCategoryRepository.findByUserEntityAndTitle(user,promiseTitle);
         // 공약 생성
         Promise promise = Promise.builder()
                 .title(createPromiseReq.getTitle())
@@ -41,8 +41,8 @@ public class PromiseService {
     }
 
     public List<PromiseRes> getPromise(Long userId, String promiseTitle) {
-        User user = userRepository.findById(userId).get();
-        PromiseCategory promiseCategory = promiseCategoryRepository.findByUserAndTitle(user, promiseTitle);
+        UserEntity user = userRepository.findById(userId).get();
+        PromiseCategory promiseCategory = promiseCategoryRepository.findByUserEntityAndTitle(user, promiseTitle);
         List<Promise> promises = promiseRepository.findByPromiseCategory(promiseCategory);
         List<PromiseRes> promiseRes = promises.stream()
                 .map(promise -> PromiseRes.builder()
