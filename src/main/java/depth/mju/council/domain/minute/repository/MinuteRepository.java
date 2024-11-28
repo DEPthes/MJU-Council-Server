@@ -1,8 +1,6 @@
 package depth.mju.council.domain.minute.repository;
 
 import depth.mju.council.domain.minute.entity.Minute;
-import depth.mju.council.domain.promise.entity.Promise;
-import depth.mju.council.domain.promise.entity.PromiseCategory;
 import depth.mju.council.domain.user.entity.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

@@ -1,8 +1,9 @@
 package depth.mju.council.domain.notice.service;
 
 import depth.mju.council.domain.common.FileType;
-import depth.mju.council.domain.notice.dto.req.ModifyNoticeReq;
 import depth.mju.council.domain.notice.dto.req.CreateNoticeReq;
+import depth.mju.council.domain.notice.dto.req.ModifyNoticeReq;
+import depth.mju.council.domain.notice.dto.res.FileRes;
 import depth.mju.council.domain.notice.dto.res.NoticeListRes;
 import depth.mju.council.domain.notice.dto.res.NoticeRes;
 import depth.mju.council.domain.notice.entity.Notice;
@@ -12,7 +13,6 @@ import depth.mju.council.domain.notice.repository.NoticeRepository;
 import depth.mju.council.domain.user.entity.UserEntity;
 import depth.mju.council.domain.user.repository.UserRepository;
 import depth.mju.council.global.DefaultAssert;
-import depth.mju.council.domain.notice.dto.res.FileRes;
 import depth.mju.council.global.payload.PageResponse;
 import depth.mju.council.infrastructure.s3.service.S3Uploader;
 import lombok.RequiredArgsConstructor;

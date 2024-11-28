@@ -1,19 +1,11 @@
 package depth.mju.council.domain.notice.controller;
 
-import depth.mju.council.domain.notice.dto.req.ModifyNoticeReq;
 import depth.mju.council.domain.notice.dto.req.CreateNoticeReq;
-import depth.mju.council.domain.notice.dto.res.NoticeRes;
+import depth.mju.council.domain.notice.dto.req.ModifyNoticeReq;
 import depth.mju.council.domain.notice.service.NoticeService;
 import depth.mju.council.global.payload.ApiResult;
-import depth.mju.council.global.payload.ErrorResponse;
-import depth.mju.council.global.payload.Message;
-import depth.mju.council.global.payload.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

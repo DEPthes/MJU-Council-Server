@@ -1,8 +1,8 @@
 package depth.mju.council.domain.notice.repository;
 
 import depth.mju.council.domain.common.FileType;
-import depth.mju.council.domain.notice.entity.NoticeFile;
 import depth.mju.council.domain.notice.dto.res.FileRes;
+import depth.mju.council.domain.notice.entity.NoticeFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

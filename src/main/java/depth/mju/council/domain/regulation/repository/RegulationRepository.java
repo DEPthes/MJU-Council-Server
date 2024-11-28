@@ -1,6 +1,5 @@
 package depth.mju.council.domain.regulation.repository;
 
-import depth.mju.council.domain.banner.entity.Banner;
 import depth.mju.council.domain.regulation.entity.Regulation;
 import depth.mju.council.domain.user.entity.UserEntity;
 import org.springframework.data.domain.Page;

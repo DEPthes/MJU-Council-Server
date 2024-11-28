@@ -2,19 +2,17 @@ package depth.mju.council.domain.minute.service;
 
 import depth.mju.council.domain.minute.dto.req.CreateMinuteReq;
 import depth.mju.council.domain.minute.dto.req.ModifyMinuteReq;
+import depth.mju.council.domain.minute.dto.res.GetAllMinuteRes;
 import depth.mju.council.domain.minute.dto.res.GetMinuteRes;
 import depth.mju.council.domain.minute.entity.Minute;
 import depth.mju.council.domain.minute.repository.MinuteRepository;
-import depth.mju.council.domain.minute.dto.res.GetAllMinuteRes;
 import depth.mju.council.domain.user.entity.UserEntity;
 import depth.mju.council.domain.user.repository.UserRepository;
-import depth.mju.council.global.payload.ApiResult;
 import depth.mju.council.global.payload.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,7 +38,7 @@ public class MinuteService {
                 .build();
         minuteRepository.save(minute);
     }
-    public PageResponse  getAllMinute(Optional<String> keyword, int page, int size) {
+    public PageResponse getAllMinute(Optional<String> keyword, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
         Page<Minute> pageResult;
         if (keyword.isPresent()) {

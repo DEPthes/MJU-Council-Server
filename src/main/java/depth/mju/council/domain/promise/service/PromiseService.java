@@ -9,9 +9,7 @@ import depth.mju.council.domain.promise.repository.PromiseCategoryRepository;
 import depth.mju.council.domain.promise.repository.PromiseRepository;
 import depth.mju.council.domain.user.entity.UserEntity;
 import depth.mju.council.domain.user.repository.UserRepository;
-import depth.mju.council.global.payload.ApiResult;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
