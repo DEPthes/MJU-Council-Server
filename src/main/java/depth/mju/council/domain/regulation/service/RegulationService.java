@@ -52,21 +52,25 @@ public class RegulationService {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
         Page<Regulation> pageResult;
         pageResult = regulationRepository.findAll(pageRequest);
-//        if (keyword.isPresent()) {
-//            pageResult = regulationRepository.findByTitleContaining(keyword.get(), pageRequest);
-//        } else {
-//            pageResult = regulationRepository.findAll(pageRequest);
-//        }
         return PageResponse.builder()
                 .totalElements(pageResult.getTotalElements())
                 .totalPage(pageResult.getTotalPages())
                 .pageSize(pageResult.getSize())
                 .contents(pageResult.getContent().stream()
-                        .map(regulation -> GetAllRegulationRes.builder()
-                                .regulationId(regulation.getId())
-                                .title(regulation.getTitle())
-                                .date(regulation.getCreatedAt())
-                                .build())
+                        .map(regulation -> {
+                            // 규정에 연결된 파일들의 URL 목록 가져오기
+                            List<RegulationFile> regulationFiles = regulationFileRepository.findByRegulation(regulation);
+                            List<String> fileUrls = regulationFiles.stream()
+                                    .map(RegulationFile::getFileUrl)
+                                    .collect(Collectors.toList());
+
+                            return GetAllRegulationRes.builder()
+                                    .regulationId(regulation.getId())
+                                    .title(regulation.getTitle())
+                                    .date(regulation.getCreatedAt())
+                                    .fileUrls(fileUrls) // fileUrls 추가
+                                    .build();
+                        })
                         .collect(Collectors.toList()))
                 .build();
     }
