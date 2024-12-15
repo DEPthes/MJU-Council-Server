@@ -24,6 +24,7 @@ import depth.mju.council.global.DefaultAssert;
 import depth.mju.council.global.config.UserPrincipal;
 import depth.mju.council.infrastructure.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +35,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class EventService {
@@ -179,7 +181,7 @@ public class EventService {
     @Transactional
     public void createEventDetail(
             Long eventId,
-            List<MultipartFile> images, CreateEventDetailReq createEventDetailReq)
+            List<MultipartFile> images, List<MultipartFile> files, CreateEventDetailReq createEventDetailReq)
     {
         Event event = validEventById(eventId);
         EventDetail eventDetail = EventDetail.builder()
@@ -189,6 +191,7 @@ public class EventService {
                 .build();
         eventDetailRepository.save(eventDetail);
         uploadEventDetailFiles(images, eventDetail, FileType.IMAGE);
+        uploadEventDetailFiles(files, eventDetail, FileType.FILE);
     }
 
     private void uploadEventDetailFiles(List<MultipartFile> files, EventDetail eventDetail, FileType fileType) {
@@ -216,7 +219,7 @@ public class EventService {
 
         List<EventDetailFile> eventDetailFiles = eventDetailFileRepository.findByEventDetail(eventDetail);
         deleteEventDetailFiles(eventDetailFiles);
-        eventDetailRepository.deleteEventDetailsByEvent(event);
+        eventDetailRepository.delete(eventDetail);
     }
 
     private EventDetail validEventDetailById(Long eventDetailId) {
@@ -226,7 +229,7 @@ public class EventService {
     }
 
     @Transactional
-    public void modifyEventDetail(Long eventId, Long eventDetailId, List<MultipartFile> images, ModifyEventDetailReq modifyEventDetailReq) {
+    public void modifyEventDetail(Long eventId, Long eventDetailId, List<MultipartFile> images, List<MultipartFile> files, ModifyEventDetailReq modifyEventDetailReq) {
         Event event = validEventById(eventId);
         EventDetail eventDetail = validEventDetailById(eventDetailId);
         DefaultAssert.isTrue(event == eventDetail.getEvent(), "잘못된 접근입니다.");
@@ -234,6 +237,9 @@ public class EventService {
 
         findEventDetailFilesByIds(modifyEventDetailReq.getDeleteImages());
         uploadEventDetailFiles(images, eventDetail, FileType.IMAGE);
+
+        findEventDetailFilesByIds(modifyEventDetailReq.getDeleteFiles());
+        uploadEventDetailFiles(files, eventDetail, FileType.FILE);
     }
 
     private void findEventDetailFilesByIds(List<Integer> files) {
@@ -257,11 +263,13 @@ public class EventService {
         EventDetail eventDetail = validEventDetailById(eventDetailId);
         DefaultAssert.isTrue(event == eventDetail.getEvent(), "잘못된 접근입니다.");
         List<FileRes> images = eventDetailFileRepository.findEventDetailFilesByEventDetailIdAndFileType(eventDetailId, FileType.IMAGE);
+        List<FileRes> files = eventDetailFileRepository.findEventDetailFilesByEventDetailIdAndFileType(eventDetailId, FileType.FILE);
         return EventDetailRes.builder()
                 .title(eventDetail.getTitle())
                 .content(eventDetail.getContent())
                 .createdAt(eventDetail.getCreatedAt().toLocalDate())
                 .images(images)
+                .files(files)
                 .build();
     }
 

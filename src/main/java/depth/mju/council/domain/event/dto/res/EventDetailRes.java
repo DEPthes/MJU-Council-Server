@@ -23,11 +23,15 @@ public class EventDetailRes {
     @Schema(description = "Schemas의 FileRes를 참고해주세요. 이미지의 리스트입니다.")
     public List<FileRes> images;
 
+    @Schema(description = "Schemas의 FileRes를 참고해주세요. 파일의 리스트입니다.")
+    public List<FileRes> files;
+
     @Builder
-    public EventDetailRes(String title, String content, LocalDate createdAt, List<FileRes> images) {
+    public EventDetailRes(String title, String content, LocalDate createdAt, List<FileRes> images, List<FileRes> files) {
         this.title = title;
         this.content = content;
         this.createdAt = createdAt;
         this.images = images;
+        this.files = files;
     }
 }
