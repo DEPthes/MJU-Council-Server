@@ -64,7 +64,7 @@ public class RegulationController {
     public ResponseEntity<ApiResult> modifyRegulation(
             @Parameter(description = "User의 토큰을 입력해주세요.", required = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long regulationId,
-            @RequestBody ModifyRegulationReq modifyRegulationReq,
+            @RequestPart ModifyRegulationReq modifyRegulationReq,
             @RequestPart(value = "file", required = false) List<MultipartFile> file) {
         regulationService.modifyRegulation(regulationId, file, modifyRegulationReq);
         ApiResult result = ApiResult.builder()
