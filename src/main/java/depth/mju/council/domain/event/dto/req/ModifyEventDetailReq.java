@@ -19,4 +19,7 @@ public class ModifyEventDetailReq {
 
     @Schema(type = "List<Integer>", example = "[1, 2, 3]", description = "행사 세부사항 수정 시 지우고자 하는 이미지의 리스트")
     public List<Integer> deleteImages;
+
+    @Schema(type = "List<Integer>", example = "[1, 2, 3]", description = "행사 세부사항 수정 시 지우고자 하는 파일의 리스트")
+    public List<Integer> deleteFiles;
 }
