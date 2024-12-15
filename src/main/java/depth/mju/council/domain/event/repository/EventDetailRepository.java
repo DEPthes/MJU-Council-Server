@@ -33,4 +33,5 @@ public interface EventDetailRepository extends JpaRepository<EventDetail, Long> 
     @Modifying
     @Query("DELETE FROM EventDetail ed WHERE ed.event = :event")
     void deleteEventDetailsByEvent(@Param("event") Event event);
+
 }
