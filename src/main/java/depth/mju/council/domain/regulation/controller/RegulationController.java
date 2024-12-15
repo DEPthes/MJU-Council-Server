@@ -60,7 +60,7 @@ public class RegulationController {
         return ResponseEntity.ok(result);
     }
     @Operation(summary = "학생회칙 수정 API", description = "학생회칙을 수정하는 API입니다.")
-    @PatchMapping("/{regulationId}")
+    @PutMapping ("/{regulationId}")
     public ResponseEntity<ApiResult> modifyRegulation(
             @Parameter(description = "User의 토큰을 입력해주세요.", required = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long regulationId,

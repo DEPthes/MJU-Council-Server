@@ -60,7 +60,7 @@ public class MinuteController {
     }
 
     @Operation(summary = "회의록 수정 API", description = "회의록을 수정하는 API입니다.")
-    @PatchMapping("/{minuteId}")
+    @PutMapping("/{minuteId}")
     public ResponseEntity<ApiResult> modifyMinute(
             @Parameter(description = "User의 토큰을 입력해주세요.", required = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long minuteId,
