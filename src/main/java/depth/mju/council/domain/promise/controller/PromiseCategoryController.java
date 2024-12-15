@@ -39,7 +39,7 @@ public class PromiseCategoryController {
         return ResponseEntity.ok(result);
     }
     @Operation(summary = "정책 수정 API", description = "정책 목록을 수정하는 API입니다.")
-    @PatchMapping("/{promiseCategoryId}/{promiseTitle}")
+    @PutMapping("/{promiseCategoryId}/{promiseTitle}")
     public ResponseEntity<ApiResult> modifyPromiseCategory(
             @Parameter(description = "User의 토큰을 입력해주세요.", required = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long promiseCategoryId,

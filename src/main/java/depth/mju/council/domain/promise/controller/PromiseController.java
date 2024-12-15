@@ -41,7 +41,7 @@ public class PromiseController {
         return ResponseEntity.ok(result);
     }
     @Operation(summary = "공약 수정 API", description = "공약 목록을 수정하는 API입니다.")
-    @PatchMapping("/{promiseId}")
+    @PutMapping("/{promiseId}")
     public ResponseEntity<ApiResult> modifyPromise(
             @Parameter(description = "User의 토큰을 입력해주세요.", required = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long promiseId,@RequestBody ModifyPromiseReq modifyPromiseReq){

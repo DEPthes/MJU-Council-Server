@@ -41,7 +41,7 @@ public class BannerController {
         return ResponseEntity.ok(result);
     }
     @Operation(summary = "배너 수정 API", description = "배너 목록을 수정하는 API입니다.")
-    @PatchMapping("/{bannerId}")
+    @PutMapping("/{bannerId}")
     public ResponseEntity<ApiResult> modifyBanner(
             @Parameter(description = "User의 토큰을 입력해주세요.", required = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long bannerId,
