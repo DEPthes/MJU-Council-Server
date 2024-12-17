@@ -28,7 +28,7 @@ public class Department extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity userEntity;
 
-    public void updateDescriptionAndImgUrl(String description, String newImageUrl) {
+    public void updateDescriptionAndImgUrl(String description, String imgUrl) {
         this.description = description;
         this.imgUrl = imgUrl;
     }
