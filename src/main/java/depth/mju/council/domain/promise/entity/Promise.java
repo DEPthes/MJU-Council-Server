@@ -1,7 +1,7 @@
 package depth.mju.council.domain.promise.entity;
 
-import depth.mju.council.domain.promise.dto.req.ModifyPromiseReq;
 import depth.mju.council.domain.common.BaseEntity;
+import depth.mju.council.domain.promise.dto.req.ModifyPromiseReq;
 import jakarta.persistence.*;
 import lombok.*;
 

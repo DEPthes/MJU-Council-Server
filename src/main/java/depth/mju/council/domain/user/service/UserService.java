@@ -7,8 +7,13 @@ import depth.mju.council.domain.user.entity.UserEntity;
 import depth.mju.council.domain.user.repository.UserRepository;
 import depth.mju.council.global.config.JwtTokenProvider;
 import depth.mju.council.global.error.DefaultException;
+import depth.mju.council.global.payload.ApiResult;
 import depth.mju.council.global.payload.ErrorCode;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,7 +38,7 @@ public class UserService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        JWTAuthResponse token = jwtTokenProvider.generateToken(loginReq.getUsername(), authentication);
+        JWTAuthResponse token = jwtTokenProvider.generateToken(loginReq.getUsername());
         return token;
     }
 
@@ -51,5 +56,16 @@ public class UserService {
         userRepository.save(userEntity);
 
         return "User registered successfully!";
+    }
+
+    public JWTAuthResponse reissueToken(String refreshToken) {
+        try {
+            jwtTokenProvider.validateRefreshToken(refreshToken);
+            return jwtTokenProvider.reissueToken(refreshToken);
+        } catch (ExpiredJwtException eje) {
+            throw new JwtException("만료된 JWT 토큰입니다.");
+        } catch (IllegalArgumentException iae) {
+            throw new JwtException("JWT 토큰의 구조가 유효하지 않습니다.");
+        }
     }
 }

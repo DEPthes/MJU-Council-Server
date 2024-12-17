@@ -1,8 +1,8 @@
 package depth.mju.council.domain.minute.entity;
 
-import depth.mju.council.domain.user.entity.UserEntity;
-import depth.mju.council.domain.minute.dto.req.ModifyMinuteReq;
 import depth.mju.council.domain.common.BaseEntity;
+import depth.mju.council.domain.minute.dto.req.ModifyMinuteReq;
+import depth.mju.council.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
