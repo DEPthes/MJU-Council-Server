@@ -4,6 +4,7 @@ import depth.mju.council.domain.user.dto.req.LoginReq;
 import depth.mju.council.domain.user.dto.req.RegisterReq;
 import depth.mju.council.domain.user.dto.res.JWTAuthResponse;
 import depth.mju.council.domain.user.service.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -37,6 +38,13 @@ public class UserController {
             @Parameter(description = "Schemas의 RegisterReq를 참고해주세요.", required = true) @RequestBody @Valid RegisterReq registerReq) {
         String response = userService.register(registerReq);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "토큰 재발급")
+    @PostMapping("/reissue")
+    public ResponseEntity<JWTAuthResponse> reissueToken(
+            @RequestHeader("RefreshToken") String refreshToken) {
+        return ResponseEntity.ok(userService.reissueToken(refreshToken));
     }
 
 }

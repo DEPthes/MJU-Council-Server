@@ -1,5 +1,6 @@
 package depth.mju.council.global.config;
 
+import com.amazonaws.services.s3.transfer.Copy;
 import depth.mju.council.domain.user.dto.res.JWTAuthResponse;
 import depth.mju.council.domain.user.entity.UserEntity;
 import depth.mju.council.domain.user.repository.UserRepository;
@@ -43,7 +44,7 @@ public class JwtTokenProvider {
     }
 
     // JWT 생성 메서드
-    public JWTAuthResponse generateToken(String username, Authentication authentication) {
+    public JWTAuthResponse generateToken(String username) {
         UserEntity user = userRepository.findByUsername(username).orElseThrow();
 
         Date currentDate = new Date();
@@ -123,6 +124,26 @@ public class JwtTokenProvider {
             return bearerToken;
         }
         return null;
+    }
+
+    public boolean validateRefreshToken(String refreshToken) {
+        // refreshToken validate
+        String username = getUsername(refreshToken);
+
+        // DB 확인
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new JwtException("잘못된 JWT 토큰입니다."));
+
+        // refreshToken 검증
+        if (!refreshToken.equals(user.getRefreshToken())) {
+            throw new JwtException("잘못된 JWT 토큰입니다.");
+        }
+        return true;
+    }
+
+    public JWTAuthResponse reissueToken(String refreshToken) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername(refreshToken));
+        return generateToken(getUsername(refreshToken));
     }
 
     public boolean validateToken(String jwtToken) {
