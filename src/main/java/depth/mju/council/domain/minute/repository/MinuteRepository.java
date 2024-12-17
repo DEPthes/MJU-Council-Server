@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface MinuteRepository extends JpaRepository<Minute,Long> {
-    List<Minute> findByUserEntity(UserEntity userEntity);
+    List<Minute> findByUserEntity(UserEntity user);
 
     Page<Minute> findByTitleContaining(String s, PageRequest pageRequest);
 }

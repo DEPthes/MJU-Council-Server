@@ -10,7 +10,9 @@ import java.util.List;
 @Repository
 public interface PromiseCategoryRepository extends JpaRepository<PromiseCategory,Long> {
 
-    List<PromiseCategory> findByUserEntity(UserEntity userEntity);
+    List<PromiseCategory> findByUserEntity(UserEntity user);
 
-    PromiseCategory findByUserEntityAndTitle(UserEntity userEntity, String promiseTitle);
+    PromiseCategory findByUserEntityAndTitle(UserEntity user, String promiseTitle);
+
+    PromiseCategory findByTitle(String promiseTitle);
 }

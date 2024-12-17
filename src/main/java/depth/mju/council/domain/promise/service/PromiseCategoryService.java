@@ -5,11 +5,13 @@ import depth.mju.council.domain.promise.entity.PromiseCategory;
 import depth.mju.council.domain.promise.repository.PromiseCategoryRepository;
 import depth.mju.council.domain.user.entity.UserEntity;
 import depth.mju.council.domain.user.repository.UserRepository;
+import depth.mju.council.global.DefaultAssert;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,32 +22,40 @@ public class PromiseCategoryService {
     private final PromiseCategoryRepository promiseCategoryRepository;
     @Transactional
     public void createPromiseCategory(Long userId, String promiseTitle) {
-        UserEntity userEntity = userRepository.findById(userId).get();
+        UserEntity user = validUserById(userId);
         PromiseCategory promiseCategory = PromiseCategory.builder()
                 .title(promiseTitle)
-                .userEntity(userEntity)
+                .userEntity(user)
                 .build();
         promiseCategoryRepository.save(promiseCategory);
     }
-    public List<PromiseCategoryRes> getPromiseCategory(Long userId) {
-        UserEntity user = userRepository.findById(userId).get();
-        List<PromiseCategory> promiseCategories = promiseCategoryRepository.findByUserEntity(user);
-        List<PromiseCategoryRes> promiseCategoryRes = promiseCategories.stream()
+    public List<PromiseCategoryRes> getPromiseCategory() {
+        List<PromiseCategory> promiseCategories = promiseCategoryRepository.findAll();
+        return promiseCategories.stream()
                 .map(promiseCategory -> PromiseCategoryRes.builder()
                         .promiseCategoryId(promiseCategory.getId())
                         .title(promiseCategory.getTitle())
                         .build())
                 .collect(Collectors.toList());
-        return promiseCategoryRes;
     }
     @Transactional
-    public void modifyPromiseCategory(Long promiseId, String promiseTitle) {
-        PromiseCategory promiseCategory = promiseCategoryRepository.findById(promiseId).get();
+    public void modifyPromiseCategory(Long promiseCategoryId, String promiseTitle) {
+        PromiseCategory promiseCategory = validatePromiseCategoryById(promiseCategoryId);
         promiseCategory.updatepromiseTitle(promiseTitle);
     }
     @Transactional
-    public void deletePromiseCategory(Long promiseId) {
-        PromiseCategory promiseCategory = promiseCategoryRepository.findById(promiseId).get();
+    public void deletePromiseCategory(Long promiseCategoryId) {
+        PromiseCategory promiseCategory = validatePromiseCategoryById(promiseCategoryId);
         promiseCategoryRepository.delete(promiseCategory);
+    }
+    private UserEntity validUserById(Long userId) {
+        Optional<UserEntity> userOptional = userRepository.findById(userId);
+        DefaultAssert.isOptionalPresent(userOptional);
+        return userOptional.get();
+    }
+    private PromiseCategory validatePromiseCategoryById(Long categoryId) {
+        Optional<PromiseCategory> categoryOptional = promiseCategoryRepository.findById(categoryId);
+        DefaultAssert.isOptionalPresent(categoryOptional);
+        return categoryOptional.get();
     }
 }

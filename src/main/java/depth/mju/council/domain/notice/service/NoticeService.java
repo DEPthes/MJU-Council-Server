@@ -1,9 +1,8 @@
 package depth.mju.council.domain.notice.service;
 
 import depth.mju.council.domain.common.FileType;
-import depth.mju.council.domain.notice.dto.req.CreateNoticeReq;
 import depth.mju.council.domain.notice.dto.req.ModifyNoticeReq;
-import depth.mju.council.domain.notice.dto.res.FileRes;
+import depth.mju.council.domain.notice.dto.req.CreateNoticeReq;
 import depth.mju.council.domain.notice.dto.res.NoticeListRes;
 import depth.mju.council.domain.notice.dto.res.NoticeRes;
 import depth.mju.council.domain.notice.entity.Notice;
@@ -13,8 +12,10 @@ import depth.mju.council.domain.notice.repository.NoticeRepository;
 import depth.mju.council.domain.user.entity.UserEntity;
 import depth.mju.council.domain.user.repository.UserRepository;
 import depth.mju.council.global.DefaultAssert;
+import depth.mju.council.domain.notice.dto.res.FileRes;
+import depth.mju.council.global.config.UserPrincipal;
 import depth.mju.council.global.payload.PageResponse;
-import depth.mju.council.infrastructure.s3.service.S3Uploader;
+import depth.mju.council.infrastructure.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class NoticeService {
 
-    private final S3Uploader s3Uploader;
+    private final S3Service s3Service;
 
     private final UserRepository userRepository;
     private final NoticeRepository noticeRepository;
@@ -71,34 +72,24 @@ public class NoticeService {
 
     @Transactional
     public void createNotice(
-            List<MultipartFile> images, List<MultipartFile> files, CreateNoticeReq createNoticeReq)
+            UserPrincipal userPrincipal, List<MultipartFile> images, List<MultipartFile> files, CreateNoticeReq createNoticeReq)
     {
-        UserEntity userEntity = userRepository.findById(1L).get(); // 임시
-
+        UserEntity user = validUserById(userPrincipal.getId());
         Notice notice = Notice.builder()
                 .title(createNoticeReq.getTitle())
                 .content(createNoticeReq.getContent())
-                .userEntity(userEntity)
+                .userEntity(user)
                 .build();
         noticeRepository.save(notice);
 
-        uploadNoticeImages(images, notice);
-        uploadNoticeFiles(files, notice);
-
+        uploadNoticeFiles(images, notice, FileType.IMAGE);
+        uploadNoticeFiles(files, notice, FileType.FILE);
     }
 
-    private void uploadNoticeImages(List<MultipartFile> images, Notice notice) {
-        for (MultipartFile image : images) {
-            if (!image.isEmpty()) {
-                saveNoticeFiles(s3Uploader.uploadImage(image), image.getOriginalFilename(), FileType.IMAGE, notice);
-            }
-        }
-    }
-
-    private void uploadNoticeFiles(List<MultipartFile> files, Notice notice) {
+    private void uploadNoticeFiles(List<MultipartFile> files, Notice notice, FileType fileType) {
         for (MultipartFile file : files) {
             if (!file.isEmpty()) {
-                saveNoticeFiles(s3Uploader.uploadFile(file), file.getOriginalFilename(), FileType.FILE, notice);
+                saveNoticeFiles(s3Service.uploadFile(file), file.getOriginalFilename(), fileType, notice);
             }
         }
     }
@@ -115,9 +106,11 @@ public class NoticeService {
     @Transactional
     public void deleteNotice(Long noticeId) {
         Notice notice = validNoticeById(noticeId);
-        // SOFT DELETE로 구현
-        notice.updateIsDeleted(true);
-        noticeFileRepository.updateIsDeletedByNoticeId(noticeId, true);
+        List<NoticeFile> noticeFiles = noticeFileRepository.findByNotice(notice);
+        deleteNoticeFiles(noticeFiles, FileType.FILE);
+        deleteNoticeFiles(noticeFiles, FileType.IMAGE);
+
+        noticeRepository.delete(notice);
     }
 
     @Transactional
@@ -129,54 +122,48 @@ public class NoticeService {
     @Transactional
     public void modifyNotice(Long noticeId, List<MultipartFile> images, List<MultipartFile> files, ModifyNoticeReq modifyNoticeReq) {
         Notice notice = validNoticeById(noticeId);
-        // Notice 정보 변경
         notice.updateTitleAndContent(modifyNoticeReq.getTitle(), modifyNoticeReq.getContent());
         // 지우고자 하는 이미지/파일 삭제
-        deleteNoticeFiles(modifyNoticeReq.getDeleteFiles());
-        deleteNoticeImages(modifyNoticeReq.getDeleteImages());
+        findNoticeFilesByIds(modifyNoticeReq.getDeleteFiles(), FileType.FILE);
+        findNoticeFilesByIds(modifyNoticeReq.getDeleteImages(), FileType.IMAGE);
         // 파일/이미지 업로드
-        uploadNoticeImages(images, notice);
-        uploadNoticeFiles(files, notice);
+        uploadNoticeFiles(images, notice, FileType.IMAGE);
+        uploadNoticeFiles(files, notice, FileType.FILE);
     }
 
-    private void deleteNoticeFiles(List<Integer> files) {
+    private void findNoticeFilesByIds(List<Integer> files, FileType fileType) {
         if (files == null || files.isEmpty()) {
             return;
         }
         List<Long> fileIds = files.stream().map(Long::valueOf).collect(Collectors.toList());
         List<NoticeFile> filesToDelete = noticeFileRepository.findAllById(fileIds);
-        filesToDelete.forEach(file -> {
+        deleteNoticeFiles(filesToDelete, fileType);
+    }
+
+    private void deleteNoticeFiles(List<NoticeFile> files, FileType fileType) {
+        files.forEach(file -> {
             // 저장 파일명 구하기
-            String saveFileName = extractSaveFileName(file.getFileUrl());
+            String saveFileName = s3Service.extractImageNameFromUrl(file.getFileUrl());
             // S3에서 삭제
-            s3Uploader.deleteFile(saveFileName);
-            // DB에서 삭제
-            noticeFileRepository.delete(file);
+            if (fileType == FileType.FILE) {
+                s3Service.deleteFile(saveFileName);
+            } else {
+                s3Service.deleteImage(saveFileName);
+            }
         });
-    }
-
-    private void deleteNoticeImages(List<Integer> images) {
-        if (images == null || images.isEmpty()) {
-            return;
-        }
-        List<Long> fileIds = images.stream().map(Long::valueOf).collect(Collectors.toList());
-        List<NoticeFile> filesToDelete = noticeFileRepository.findAllById(fileIds);
-        filesToDelete.forEach(image -> {
-            String saveFileName = extractSaveFileName(image.getFileUrl());
-            s3Uploader.deleteImage(saveFileName);
-            noticeFileRepository.delete(image);
-        });
-    }
-
-    public String extractSaveFileName(String fileUrl) {
-        String[] parts = fileUrl.split("/");
-        return parts[parts.length - 1];
+        noticeFileRepository.deleteNoticeFiles(files);
     }
 
     private Notice validNoticeById(Long noticeId) {
         Optional<Notice> noticeOptional = noticeRepository.findByIdAndIsDeleted(noticeId, false);
         DefaultAssert.isOptionalPresent(noticeOptional);
         return noticeOptional.get();
+    }
+
+    private UserEntity validUserById(Long userId) {
+        Optional<UserEntity> userOptional = userRepository.findById(userId);
+        DefaultAssert.isOptionalPresent(userOptional);
+        return userOptional.get();
     }
 
 }

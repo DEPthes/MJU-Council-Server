@@ -3,8 +3,6 @@ package depth.mju.council.global.config;
 import depth.mju.council.domain.user.entity.UserEntity;
 import depth.mju.council.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,15 +18,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        if (username == null || username.trim().isEmpty()) {
+            throw new UsernameNotFoundException("사용자 이름이 잘못되었습니다.");
+        }
         UserEntity userEntity = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다"));
-
-        // 여기서 return하는 user는 직접 생성한 User 엔티티가 아닌 security 라이브러리의 User
-        return User.builder()
-                .username(userEntity.getUsername())
-                .password(userEntity.getEncryptedPwd())
-                .authorities(new SimpleGrantedAuthority("ADMIN"))
-                .build();
+        return UserPrincipal.from(userEntity);
     }
 
     public Long findUserIdByUsername(String username) {
@@ -36,5 +31,4 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다"));
         return userEntity.getId();
     }
-
 }

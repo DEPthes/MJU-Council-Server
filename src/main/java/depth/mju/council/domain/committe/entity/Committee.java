@@ -3,10 +3,16 @@ package depth.mju.council.domain.committe.entity;
 import depth.mju.council.domain.common.BaseEntity;
 import depth.mju.council.domain.user.entity.UserEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "committee")
 public class Committee extends BaseEntity {
     @Id
@@ -25,4 +31,13 @@ public class Committee extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity userEntity;
+
+    public void update(String description, String college, String name, String pageUrl, String snsUrl, String imgUrl) {
+        this.description = description;
+        this.college = college;
+        this.name = name;
+        this.pageUrl = pageUrl;
+        this.snsUrl = snsUrl;
+        this.imgUrl = imgUrl;
+    }
 }

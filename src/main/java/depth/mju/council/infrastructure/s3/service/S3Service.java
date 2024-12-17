@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
-public class S3Uploader {
+public class S3Service {
 
     private final AmazonS3 amazonS3;
 
@@ -105,6 +105,10 @@ public class S3Uploader {
         } catch (AmazonServiceException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 삭제에 실패했습니다.");
         }
-
     }
+
+    public String extractImageNameFromUrl(String imageUrl) {
+        return imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+    }
+
 }

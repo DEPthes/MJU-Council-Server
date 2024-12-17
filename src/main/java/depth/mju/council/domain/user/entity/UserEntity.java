@@ -32,4 +32,12 @@ public class UserEntity extends BaseEntity {
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
+
+    public void updateCouncil(String generation, String name, String email, String snsUrl, String newImageUrl) {
+        this.generation = generation;
+        this.name = name;
+        this.email = email;
+        this.snsUrl = snsUrl;
+        this.logoUrl = newImageUrl;
+    }
 }

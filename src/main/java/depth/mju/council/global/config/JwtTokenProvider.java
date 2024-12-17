@@ -55,6 +55,7 @@ public class JwtTokenProvider {
                 .claim("username", username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(accessTokenExpireDate)
+                .subject(username)
                 .signWith(getSignInKey(), Jwts.SIG.HS256)
                 .compact();
 
@@ -63,6 +64,7 @@ public class JwtTokenProvider {
                 .claim("username", username)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(refreshTokenExpireDate)
+                .subject(username)
                 .signWith(getSignInKey(), Jwts.SIG.HS256)
                 .compact();
 
@@ -93,7 +95,7 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
-    public String getEmail(String token) {
+    public String getUsername(String token) {
         return Jwts.parser()
                 .verifyWith(getSignInKey())
                 .build()
@@ -103,7 +105,7 @@ public class JwtTokenProvider {
 
     // 사용자 인증 정보 조회
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getEmail(token));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", new ArrayList<>());
     }
 
