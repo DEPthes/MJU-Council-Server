@@ -47,7 +47,7 @@ public class DepartmentController {
     public ResponseEntity<?> updateDepartment(
             @PathVariable Long departmentId,
             @RequestPart("description") String description,
-            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestPart(value = "image") MultipartFile image,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         departmentService.updateDepartment(departmentId, description, image, userPrincipal);
         return ResponseEntity.ok(
