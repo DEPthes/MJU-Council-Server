@@ -1,8 +1,10 @@
 package depth.mju.council.domain.promise.service;
 
 import depth.mju.council.domain.promise.dto.res.PromiseCategoryRes;
+import depth.mju.council.domain.promise.entity.Promise;
 import depth.mju.council.domain.promise.entity.PromiseCategory;
 import depth.mju.council.domain.promise.repository.PromiseCategoryRepository;
+import depth.mju.council.domain.promise.repository.PromiseRepository;
 import depth.mju.council.domain.user.entity.UserEntity;
 import depth.mju.council.domain.user.repository.UserRepository;
 import depth.mju.council.global.DefaultAssert;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class PromiseCategoryService {
     private final UserRepository userRepository;
     private final PromiseCategoryRepository promiseCategoryRepository;
+    private final PromiseRepository promiseRepository;
     @Transactional
     public void createPromiseCategory(Long userId, String promiseTitle) {
         UserEntity user = validUserById(userId);
@@ -46,6 +49,8 @@ public class PromiseCategoryService {
     @Transactional
     public void deletePromiseCategory(Long promiseCategoryId) {
         PromiseCategory promiseCategory = validatePromiseCategoryById(promiseCategoryId);
+        List<Promise> promises = promiseRepository.findByPromiseCategory(promiseCategory);
+        promiseRepository.deleteAll(promises);
         promiseCategoryRepository.delete(promiseCategory);
     }
     private UserEntity validUserById(Long userId) {
